@@ -20,15 +20,15 @@ pub fn load_ball_templates(
     assets: Res<AssetServer>,
 ) {
     let colors: Vec<Color> = vec![
-        Color::rgb(1.0, 0.5, 1.0),
-        Color::rgb(1.0, 1.0, 0.5),
-        Color::rgb(0.5, 1.0, 1.0),
-        Color::rgb(0.5, 0.5, 0.5),
-        Color::rgb(1.0, 0.0, 0.0),
-        Color::rgb(0.0, 1.0, 0.0),
-        Color::rgb(0.0, 0.0, 1.0),
-        Color::rgb(0.0, 1.0, 1.0),
-        Color::rgb(1.0, 1.0, 0.0),
+        Color::rgb(1.0, 0.5, 1.0),       // Zero ball (not used)
+        Color::rgb(1.0, 1.0, 0.5),       // Ping pong
+        Color::rgb(0.9, 0.9, 0.9),       // Golf
+        Color::rgb(0.0, 0.0, 0.4),       // Pool
+        Color::rgb(0.369, 0.624, 0.0),   // Tennis
+        Color::rgb(1.0, 1.0, 1.0),       // Baseball
+        Color::rgb(0.8, 0.8, 0.8),       // Soccer
+        Color::rgb(0.612, 0.145, 0.036), // Basketball
+        Color::rgb(1.0, 1.0, 1.0),       // Beach ball
         Color::rgb(1.0, 0.0, 1.0),
     ];
     let models: Vec<Option<(&'static str, f32, Vec<(&'static str, &'static str)>)>> = vec![
