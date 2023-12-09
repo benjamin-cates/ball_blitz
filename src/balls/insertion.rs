@@ -8,6 +8,7 @@ pub fn insertion_check(
     window: Query<&Window, With<PrimaryWindow>>,
     query: Query<(&Camera, &GlobalTransform)>,
     buttons: Res<Input<MouseButton>>,
+    keys: Res<Input<KeyCode>>,
     ball_templates: Res<BallTemplates>,
     mut commands: Commands,
     mut gizmos: Gizmos,
@@ -54,7 +55,11 @@ pub fn insertion_check(
         let mut new_ball = Ball::new(size);
         new_ball.spatial.transform.translation = point;
         new_ball.spawn(&ball_templates, &mut commands);
-        let new_size = rand::thread_rng().gen_range(1..=4);
+        let new_size = if keys.pressed(KeyCode::ShiftLeft) {
+            5
+        } else {
+            rand::thread_rng().gen_range(1..=4)
+        };
         // Replace example ball
         commands.entity(example_ball.2).despawn_recursive();
         Ball::new(new_size)
