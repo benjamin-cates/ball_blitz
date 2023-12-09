@@ -62,10 +62,10 @@ pub fn load_ball_templates(
                 ("Mesh0/Primitive2", "Material2"),
             ],
         )),
-        Some(("Bowling.glb", 6.71, vec![("Mesh0/Primitive0", "Material0")])),
+        Some(("Bowling.glb", 6.85, vec![("Mesh0/Primitive0", "Material0")])),
         Some((
             "Soccer.glb",
-            2.1,
+            2.16,
             vec![
                 ("Mesh0/Primitive0", "Material0"),
                 ("Mesh0/Primitive1", "Material1"),
@@ -73,7 +73,7 @@ pub fn load_ball_templates(
         )),
         Some((
             "Basketball.glb",
-            4.64,
+            4.7,
             vec![
                 ("Mesh0/Primitive0", "Material0"),
                 ("Mesh1/Primitive0", "Material1"),
@@ -89,7 +89,6 @@ pub fn load_ball_templates(
                 ("Mesh3/Primitive0", "Material3"),
             ],
         )),
-        None,
         None,
         None,
         None,
