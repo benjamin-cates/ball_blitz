@@ -31,70 +31,54 @@ pub fn load_ball_templates(
         Color::rgb(1.0, 1.0, 0.0),
         Color::rgb(1.0, 0.0, 1.0),
     ];
-    let models: Vec<Option<Vec<(&'static str, f32, &'static str)>>> = vec![
+    let models: Vec<Option<(&'static str, f32, Vec<(&'static str, &'static str)>)>> = vec![
         None,
         None,
-        Some(vec![(
-            "Golf.glb#Mesh0/Primitive0",
-            0.31,
-            "Golf.glb#Material0",
-        )]),
-        Some(vec![
-            ("Pool.glb#Mesh0/Primitive0", 0.95, "Pool.glb#Material0"),
-            ("Pool.glb#Mesh0/Primitive1", 0.95, "Pool.glb#Material1"),
-            ("Pool.glb#Mesh1/Primitive0", 0.95, "Pool.glb#Material2"),
-            ("Pool.glb#Mesh2/Primitive0", 0.95, "Pool.glb#Material0"),
-        ]),
-        Some(vec![
-            (
-                "Tennis.glb#Mesh0/Primitive0",
-                0.0106,
-                "Tennis.glb#Material0",
-            ),
-            (
-                "Tennis.glb#Mesh1/Primitive0",
-                0.0106,
-                "Tennis.glb#Material1",
-            ),
-        ]),
-        Some(vec![
-            (
-                "Baseball.glb#Mesh0/Primitive0",
-                0.4,
-                "Baseball.glb#Material0",
-            ),
-            (
-                "Baseball.glb#Mesh0/Primitive1",
-                0.4,
-                "Baseball.glb#Material1",
-            ),
-            (
-                "Baseball.glb#Mesh0/Primitive2",
-                0.4,
-                "Baseball.glb#Material2",
-            ),
-        ]),
-        Some(vec![(
-            "Bowling.glb#Mesh0/Primitive0",
-            6.71,
-            "Bowling.glb#Material0",
-        )]),
-        Some(vec![
-            ("Soccer.glb#Mesh0/Primitive0", 2.04, "Soccer.glb#Material0"),
-            ("Soccer.glb#Mesh0/Primitive1", 2.04, "Soccer.glb#Material1"),
-        ]),
-        Some(vec![
-            (
-                "Basketball.glb#Mesh0/Primitive0",
-                4.64,
-                "Basketball.glb#Material0",
-            ),
-            (
-                "Basketball.glb#Mesh1/Primitive0",
-                4.64,
-                "Basketball.glb#Material1",
-            ),
-        ]),
+        Some(("Golf.glb", 0.31, vec![("Mesh0/Primitive0", "Material0")])),
+        Some((
+            "Pool.glb",
+            0.95,
+            vec![
+                ("Mesh0/Primitive0", "Material0"),
+                ("Mesh0/Primitive1", "Material1"),
+                ("Mesh1/Primitive0", "Material2"),
+                ("Mesh2/Primitive0", "Material0"),
+            ],
+        )),
+        Some((
+            "Tennis.glb",
+            0.0106,
+            vec![
+                ("Mesh0/Primitive0", "Material0"),
+                ("Mesh1/Primitive0", "Material1"),
+            ],
+        )),
+        Some((
+            "Baseball.glb",
+            0.4,
+            vec![
+                ("Mesh0/Primitive0", "Material0"),
+                ("Mesh0/Primitive1", "Material1"),
+                ("Mesh0/Primitive2", "Material2"),
+            ],
+        )),
+        Some(("Bowling.glb", 6.71, vec![("Mesh0/Primitive0", "Material0")])),
+        Some((
+            "Soccer.glb",
+            2.1,
+            vec![
+                ("Mesh0/Primitive0", "Material0"),
+                ("Mesh0/Primitive1", "Material1"),
+            ],
+        )),
+        Some((
+            "Basketball.glb",
+            4.64,
+            vec![
+                ("Mesh0/Primitive0", "Material0"),
+                ("Mesh1/Primitive0", "Material1"),
+            ],
+        )),
         None,
         None,
         None,
@@ -115,11 +99,11 @@ pub fn load_ball_templates(
                 })),
                 ..default()
             }],
-            Some(mats) => mats
+            Some((file, scale, meshes)) => meshes
                 .iter()
-                .map(|(mesh, scale, mat)| PbrBundle {
-                    material: assets.load(*mat),
-                    mesh: assets.load(*mesh),
+                .map(|(mesh, mat)| PbrBundle {
+                    material: assets.load((*file).to_owned() + "#" + *mat),
+                    mesh: assets.load((*file).to_owned() + "#" + *mesh),
                     transform: Transform {
                         scale: Vec3::from_array([*scale; 3]),
                         ..default()
