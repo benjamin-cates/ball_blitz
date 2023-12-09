@@ -57,7 +57,23 @@ pub fn load_ball_templates(
                 "Tennis.glb#Material1",
             ),
         ]),
-        None,
+        Some(vec![
+            (
+                "Baseball.glb#Mesh0/Primitive0",
+                0.4,
+                "Baseball.glb#Material0",
+            ),
+            (
+                "Baseball.glb#Mesh0/Primitive1",
+                0.4,
+                "Baseball.glb#Material1",
+            ),
+            (
+                "Baseball.glb#Mesh0/Primitive2",
+                0.4,
+                "Baseball.glb#Material2",
+            ),
+        ]),
         Some(vec![(
             "Bowling.glb#Mesh0/Primitive0",
             6.71,
