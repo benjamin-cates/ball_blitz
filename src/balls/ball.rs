@@ -21,7 +21,7 @@ pub fn load_ball_templates(
 ) {
     let colors: Vec<Color> = vec![
         Color::rgb(1.0, 0.5, 1.0),       // Zero ball (not used)
-        Color::rgb(1.0, 1.0, 0.5),       // Ping pong
+        Color::rgb(1.0, 0.45, 0.3),      // Ping pong
         Color::rgb(0.9, 0.9, 0.9),       // Golf
         Color::rgb(0.0, 0.0, 0.4),       // Pool
         Color::rgb(0.369, 0.624, 0.0),   // Tennis
@@ -98,7 +98,9 @@ pub fn load_ball_templates(
         .map(|idx| match &models[idx as usize] {
             None => vec![PbrBundle {
                 material: materials.add(StandardMaterial {
-                    emissive: colors[idx as usize],
+                    base_color: colors[idx as usize],
+                    perceptual_roughness: 0.67,
+                    specular_transmission: 0.5,
                     ..default()
                 }),
                 mesh: meshes.add(Mesh::from(shape::UVSphere {
