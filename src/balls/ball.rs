@@ -79,6 +79,16 @@ pub fn load_ball_templates(
                 ("Mesh1/Primitive0", "Material1"),
             ],
         )),
+        Some((
+            "Beach_ball.glb",
+            2.65,
+            vec![
+                ("Mesh0/Primitive0", "Material0"),
+                ("Mesh1/Primitive0", "Material1"),
+                ("Mesh2/Primitive0", "Material2"),
+                ("Mesh3/Primitive0", "Material3"),
+            ],
+        )),
         None,
         None,
         None,
