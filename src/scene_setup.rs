@@ -170,8 +170,10 @@ pub(crate) fn setup(
         material: line_mat,
         ..default()
     });
-    commands
-        .spawn(balls::Ball::new(1, &ball_templates))
+    let mut example_ball = balls::Ball::new(1);
+    example_ball.spatial.transform.translation = Vec3::new(0.0, 12.0, 0.0);
+    example_ball
+        .spawn(&ball_templates, &mut commands)
         .insert(balls::ExampleBall(()))
         .insert(GravityScale(0.0))
         .insert(RigidBody::Kinematic);

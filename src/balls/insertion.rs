@@ -51,16 +51,14 @@ pub fn insertion_check(
     //Check if mouse pressed
     if buttons.just_pressed(MouseButton::Left) {
         // Spawn ball
-        let mut ball = Ball::new(size, &ball_templates);
-        ball.pbr_bundle.transform.translation = point;
-        commands.spawn(ball);
+        let mut new_ball = Ball::new(size);
+        new_ball.spatial.transform.translation = point;
+        new_ball.spawn(&ball_templates, &mut commands);
         let new_size = rand::thread_rng().gen_range(1..=4);
         // Replace example ball
-        commands.entity(example_ball.2).despawn();
-        let mut example_ball = Ball::new(new_size, &ball_templates);
-        example_ball.pbr_bundle.transform.translation = point;
-        commands
-            .spawn(example_ball)
+        commands.entity(example_ball.2).despawn_recursive();
+        Ball::new(new_size)
+            .spawn(&ball_templates, &mut commands)
             .remove::<Collider>()
             .remove::<RigidBody>()
             .insert(ExampleBall(()))

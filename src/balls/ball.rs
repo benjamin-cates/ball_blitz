@@ -1,3 +1,4 @@
+use bevy::ecs::system::EntityCommands;
 use bevy::prelude::*;
 use bevy_xpbd_3d::prelude::*;
 
@@ -9,14 +10,14 @@ pub struct ExampleBall(pub ());
 
 #[derive(Resource)]
 pub struct BallTemplates {
-    materials: Vec<Handle<StandardMaterial>>,
-    meshes: Vec<Handle<Mesh>>,
+    meshes: Vec<Vec<PbrBundle>>,
 }
 
 pub fn load_ball_templates(
     mut commands: Commands,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
+    assets: Res<AssetServer>,
 ) {
     let colors: Vec<Color> = vec![
         Color::rgb(1.0, 0.5, 1.0),
@@ -30,25 +31,73 @@ pub fn load_ball_templates(
         Color::rgb(1.0, 1.0, 0.0),
         Color::rgb(1.0, 0.0, 1.0),
     ];
-    let materials: Vec<Handle<StandardMaterial>> = colors
-        .into_iter()
-        .map(|col| {
-            materials.add(StandardMaterial {
-                emissive: col,
-                ..Default::default()
-            })
+    let models: Vec<Option<Vec<(&'static str, f32, &'static str)>>> = vec![
+        None,
+        None,
+        Some(vec![(
+            "Golf.glb#Mesh0/Primitive0",
+            0.31,
+            "Golf.glb#Material0",
+        )]),
+        Some(vec![
+            ("Pool.glb#Mesh0/Primitive0", 0.95, "Pool.glb#Material0"),
+            ("Pool.glb#Mesh0/Primitive1", 0.95, "Pool.glb#Material1"),
+            ("Pool.glb#Mesh1/Primitive0", 0.95, "Pool.glb#Material2"),
+            ("Pool.glb#Mesh2/Primitive0", 0.95, "Pool.glb#Material0"),
+        ]),
+        Some(vec![
+            (
+                "Tennis.glb#Mesh0/Primitive0",
+                0.0106,
+                "Tennis.glb#Material0",
+            ),
+            (
+                "Tennis.glb#Mesh1/Primitive0",
+                0.0106,
+                "Tennis.glb#Material1",
+            ),
+        ]),
+        Some(vec![
+            ("Soccer.glb#Mesh0/Primitive0", 1.551, "Soccer.glb#Material0"),
+            ("Soccer.glb#Mesh0/Primitive1", 1.551, "Soccer.glb#Material1"),
+        ]),
+        None,
+        None,
+        None,
+        None,
+        None,
+    ];
+    let pbr_bundles: Vec<Vec<PbrBundle>> = (0..10u8)
+        .map(|idx| match &models[idx as usize] {
+            None => vec![PbrBundle {
+                material: materials.add(StandardMaterial {
+                    emissive: colors[idx as usize],
+                    ..default()
+                }),
+                mesh: meshes.add(Mesh::from(shape::UVSphere {
+                    radius: BallSize(idx).start_radius(),
+                    sectors: (BallSize(idx).radius() * 10. + 20.) as usize,
+                    stacks: (BallSize(idx).radius() * 10. + 20.) as usize,
+                })),
+                ..default()
+            }],
+            Some(mats) => mats
+                .iter()
+                .map(|(mesh, scale, mat)| PbrBundle {
+                    material: assets.load(*mat),
+                    mesh: assets.load(*mesh),
+                    transform: Transform {
+                        scale: Vec3::from_array([*scale; 3]),
+                        ..default()
+                    },
+                    ..default()
+                })
+                .collect(),
         })
         .collect();
-    let meshes: Vec<Handle<Mesh>> = (0..10)
-        .map(|size| {
-            meshes.add(Mesh::from(shape::UVSphere {
-                radius: BallSize(size).start_radius(),
-                sectors: (BallSize(size).radius() * 10. + 20.) as usize,
-                stacks: (BallSize(size).radius() * 10. + 20.) as usize,
-            }))
-        })
-        .collect();
-    commands.insert_resource(BallTemplates { materials, meshes });
+    commands.insert_resource(BallTemplates {
+        meshes: pbr_bundles,
+    });
 }
 
 impl BallSize {
@@ -68,8 +117,8 @@ pub struct Ball {
     pub size: BallSize,
     rigid_body: RigidBody,
     pub collider: Collider,
-    pub pbr_bundle: PbrBundle,
     pub vel: LinearVelocity,
+    pub spatial: SpatialBundle,
     mass: Mass,
     restitution: Restitution,
     friction: Friction,
@@ -84,24 +133,38 @@ impl Default for Ball {
             size: BallSize(1),
             rigid_body: RigidBody::Dynamic,
             collider: Collider::ball(BallSize(1).start_radius()),
-            pbr_bundle: PbrBundle { ..default() },
             restitution: Restitution::new(DEFAULT_RESTITUTION),
             friction: Friction::new(DEFAULT_FRICTION),
             mass: Mass(1.0),
             vel: LinearVelocity(Vec3::new(0., 0., 0.)),
+            spatial: SpatialBundle { ..default() },
         }
     }
 }
 
 impl Ball {
-    pub fn new(size: u8, templates: &Res<BallTemplates>) -> Self {
+    pub fn new(size: u8) -> Self {
         let mut out: Ball = Ball::default();
         out.size = BallSize(size);
         out.collider = Collider::ball(BallSize(size).start_radius());
-        out.pbr_bundle.transform.scale = Vec3::from_array([BallSize(size).scale(); 3]);
+        out.spatial.transform.scale = Vec3::from_array([BallSize(size).scale(); 3]);
         out.mass = Mass((size as f32) * (size as f32) * 10.0);
-        out.pbr_bundle.mesh = templates.meshes[size as usize].clone();
-        out.pbr_bundle.material = templates.materials[size as usize].clone();
         out
+    }
+    pub fn get_meshes(size: u8, templates: &BallTemplates, commands: &mut Commands) -> Vec<Entity> {
+        templates.meshes[size as usize]
+            .iter()
+            .map(|pbr_bundle| commands.spawn(pbr_bundle.clone()).id())
+            .collect()
+    }
+    pub fn spawn<'w, 's, 'a>(
+        self,
+        templates: &BallTemplates,
+        commands: &'a mut Commands<'w, 's>,
+    ) -> EntityCommands<'w, 's, 'a> {
+        let meshes = Ball::get_meshes(self.size.0, templates, commands);
+        let mut entity_commands = commands.spawn(self);
+        entity_commands.push_children(meshes.as_slice());
+        entity_commands
     }
 }
