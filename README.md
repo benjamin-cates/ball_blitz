@@ -27,6 +27,8 @@ Currently, the project does not have a WebAssembly port, so you will have to com
 A window with the game will pop up. Note that this does not work in WSL right now because the window manager is buggy. If you have problems with the linker, turn off the "dynamic-linking" feature in `Cargo.toml`, which will make the compilation take much longer but might fix a linker issue.
 
 ## Compiling (WebAssembly)
+Note: WebAssembly compilation should happen on the `web` branch. Merge changes from main into the web branch.
+
 Since we want the wasm binary to be as small as possible, there are several optimizations we need to do in order to make it around 20 MB. 
 1. Ensure you have the wasm32 rust toolchain installed
 The `--no-default-features` flag disables Bevy dynamic linking, which is not supported on wasm.
@@ -35,7 +37,7 @@ The `--no-default-features` flag disables Bevy dynamic linking, which is not sup
 4. Run the following commands in this order:
 ```
 cargo build --target wasm32-unknown-unknown --release --no-default-features
-wasm-bindgen --no-typescript --target web --out-dir ./out/ ./target/wasm32-unknown-unknown/release/ball_blitz.wasm-opt
+wasm-bindgen --no-typescript --target web --out-dir ./out/ ./target/wasm32-unknown-unknown/release/ball_blitz.wasm
 wasm-opt -Oz -o out/ball_blitz_bg.wasm out/ball_blitz_bg.wasm
 ```
 First time compilation will take about 10 minutes and the size of the wasm binary at `out/ball_blitz_bg.wasm` should be about 20 MB.
