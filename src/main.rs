@@ -8,6 +8,7 @@ use bevy_xpbd_3d::prelude::*;
 
 fn main() {
     App::new()
+        .insert_resource(bevy::asset::AssetMetaCheck::Never)
         .add_plugins((DefaultPlugins, PhysicsPlugins::default()))
         .add_systems(Startup, balls::load_ball_templates)
         .add_systems(PostStartup, scene_setup::setup)

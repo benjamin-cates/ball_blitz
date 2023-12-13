@@ -25,13 +25,13 @@ pub fn orbit_camera(
     input_mouse: Res<Input<MouseButton>>,
     mut query: Query<(&mut Transform, &mut CameraAngle)>,
 ) {
-    if !input_mouse.pressed(MouseButton::Left) {
-        return;
-    }
     let window = window.get_single().unwrap();
     let mut rotation_move = Vec2::ZERO;
     for ev in ev_motion.read() {
         rotation_move += ev.delta
+    }
+    if !input_mouse.pressed(MouseButton::Left) {
+        return;
     }
     for (mut transform, mut pos) in query.iter_mut() {
         if rotation_move.length_squared() > 0.0 {
