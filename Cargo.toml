@@ -10,6 +10,7 @@ bevy_xpbd_3d = "0.3.2"
 lazy_static = "1.4.0"
 blake3 = { version = "1.5", features=["pure"] }
 rand = "0.8.5"
+bevy_wasm_window_resize = "0.2.1"
 
 # Enable a small amount of optimization in debug mode
 [profile.dev]
