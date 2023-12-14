@@ -4,7 +4,8 @@ use bevy_xpbd_3d::{math::PI, prelude::*};
 
 pub const BOX_HEIGHT: f32 = 12.0;
 pub const BOX_WIDTH: f32 = 8.0;
-pub const BOX_RADIUS: f32 = BOX_WIDTH / 2.0;
+pub const BOX_X: f32 = BOX_WIDTH / 2.0;
+pub const BOX_Y: f32 = BOX_HEIGHT / 2.0;
 const BOX_THICKNESS: f32 = 0.5;
 
 #[derive(Bundle)]
@@ -52,7 +53,7 @@ pub(crate) fn setup(
     spawn_lights(&mut commands);
     commands.spawn(camera::new_camera());
     let mut example_ball = balls::Ball::new(1);
-    example_ball.spatial.transform.translation = Vec3::new(0.0, BOX_HEIGHT, 0.0);
+    example_ball.spatial.transform.translation = Vec3::new(0.0, BOX_Y, 0.0);
     example_ball
         .spawn(&ball_templates, &mut commands)
         .insert(balls::ExampleBall(()))
@@ -79,7 +80,7 @@ fn spawn_box(
     // Boxes that are in the positive x and negative x direction
     for side in [-1.0f32, 1.0] {
         commands.spawn(WallBundle::new(
-            Vec3::new(side * BOX_RADIUS, BOX_HEIGHT / 2.0, 0.0),
+            Vec3::new(side * BOX_X, 0., 0.),
             BOX_WIDTH,
             BOX_HEIGHT,
             meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
@@ -92,7 +93,7 @@ fn spawn_box(
     // Boxes that are in the positive z and negative z direction
     for side in [-1.0f32, 1.0] {
         commands.spawn(WallBundle::new(
-            Vec3::new(0.0, BOX_HEIGHT / 2.0, side * BOX_RADIUS),
+            Vec3::new(0., 0., side * BOX_X),
             BOX_WIDTH,
             BOX_HEIGHT,
             meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
@@ -113,7 +114,7 @@ fn spawn_box(
         ..default()
     });
     commands.spawn(WallBundle::new(
-        Vec3::new(0.0, 0.0, 0.0),
+        Vec3::new(0., -BOX_Y, 0.),
         BOX_WIDTH + BOX_THICKNESS,
         BOX_WIDTH + BOX_THICKNESS,
         meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
@@ -134,23 +135,23 @@ fn spawn_box(
             Mesh::ATTRIBUTE_POSITION,
             vec![
                 // 4 vertical lines
-                [-BOX_RADIUS, 0., -BOX_RADIUS],
-                [-BOX_RADIUS, BOX_HEIGHT, -BOX_RADIUS],
-                [-BOX_RADIUS, 0., BOX_RADIUS],
-                [-BOX_RADIUS, BOX_HEIGHT, BOX_RADIUS],
-                [BOX_RADIUS, 0., -BOX_RADIUS],
-                [BOX_RADIUS, BOX_HEIGHT, -BOX_RADIUS],
-                [BOX_RADIUS, 0., BOX_RADIUS],
-                [BOX_RADIUS, BOX_HEIGHT, BOX_RADIUS],
+                [-BOX_X, -BOX_Y, -BOX_X],
+                [-BOX_X, BOX_Y, -BOX_X],
+                [-BOX_X, -BOX_Y, BOX_X],
+                [-BOX_X, BOX_Y, BOX_X],
+                [BOX_X, -BOX_Y, -BOX_X],
+                [BOX_X, BOX_Y, -BOX_X],
+                [BOX_X, -BOX_Y, BOX_X],
+                [BOX_X, BOX_Y, BOX_X],
                 // 4 horizontal lines on top making the square
-                [-BOX_RADIUS, BOX_HEIGHT, -BOX_RADIUS],
-                [-BOX_RADIUS, BOX_HEIGHT, BOX_RADIUS],
-                [-BOX_RADIUS, BOX_HEIGHT, -BOX_RADIUS],
-                [BOX_RADIUS, BOX_HEIGHT, -BOX_RADIUS],
-                [BOX_RADIUS, BOX_HEIGHT, -BOX_RADIUS],
-                [BOX_RADIUS, BOX_HEIGHT, BOX_RADIUS],
-                [-BOX_RADIUS, BOX_HEIGHT, BOX_RADIUS],
-                [BOX_RADIUS, BOX_HEIGHT, BOX_RADIUS],
+                [-BOX_X, BOX_Y, -BOX_X],
+                [-BOX_X, BOX_Y, BOX_X],
+                [-BOX_X, BOX_Y, -BOX_X],
+                [BOX_X, BOX_Y, -BOX_X],
+                [BOX_X, BOX_Y, -BOX_X],
+                [BOX_X, BOX_Y, BOX_X],
+                [-BOX_X, BOX_Y, BOX_X],
+                [BOX_X, BOX_Y, BOX_X],
             ],
         ),
     );

@@ -1,5 +1,5 @@
 use crate::balls::*;
-use crate::scene_setup::{BOX_HEIGHT, BOX_RADIUS};
+use crate::scene_setup::{BOX_HEIGHT, BOX_X, BOX_Y};
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 use bevy_xpbd_3d::prelude::{Collider, Mass, RigidBody};
@@ -30,7 +30,7 @@ pub fn insertion_check(
     }
     let dist = ray
         .unwrap()
-        .intersect_plane(Vec3::new(0.0, BOX_HEIGHT, 0.0), Vec3::new(0.0, 1.0, 0.0));
+        .intersect_plane(Vec3::new(0.0, BOX_Y, 0.0), Vec3::new(0.0, 1.0, 0.0));
     if dist.is_none() {
         return;
     }
@@ -39,15 +39,15 @@ pub fn insertion_check(
         Ok(ex) => ex,
         Err(_) => return,
     };
-    if point.x.abs() > BOX_RADIUS || point.z.abs() > BOX_RADIUS {
+    if point.x.abs() > BOX_X || point.z.abs() > BOX_X {
         *example_ball.3 = Visibility::Hidden;
         return;
     }
     *example_ball.3 = Visibility::Visible;
     let size = example_ball.0 .0;
     let radius = BallSize(size).radius() + 0.05;
-    point.x = point.x.clamp(-BOX_RADIUS + radius, BOX_RADIUS - radius);
-    point.z = point.z.clamp(-BOX_RADIUS + radius, BOX_RADIUS - radius);
+    point.x = point.x.clamp(-BOX_X + radius, BOX_X - radius);
+    point.z = point.z.clamp(-BOX_X + radius, BOX_X - radius);
     // Draw example ball and line
     gizmos.ray(point, Vec3::new(0.0, -BOX_HEIGHT - 0.2, 0.0), Color::GREEN);
     example_ball.1.translation = point;
