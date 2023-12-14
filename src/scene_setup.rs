@@ -3,9 +3,11 @@ use bevy::{prelude::*, render::render_resource::PrimitiveTopology};
 use bevy_xpbd_3d::{math::PI, prelude::*};
 
 pub const BOX_HEIGHT: f32 = 12.0;
-pub const BOX_WIDTH: f32 = 8.0;
-pub const BOX_X: f32 = BOX_WIDTH / 2.0;
+pub const BOX_WIDTH_X: f32 = 8.0;
+pub const BOX_WIDTH_Z: f32 = 8.0;
+pub const BOX_X: f32 = BOX_WIDTH_X / 2.0;
 pub const BOX_Y: f32 = BOX_HEIGHT / 2.0;
+pub const BOX_Z: f32 = BOX_WIDTH_Z / 2.0;
 const BOX_THICKNESS: f32 = 0.5;
 
 #[derive(Bundle)]
@@ -81,10 +83,11 @@ fn spawn_box(
     for side in [-1.0f32, 1.0] {
         commands.spawn(WallBundle::new(
             Vec3::new(side * BOX_X, 0., 0.),
-            BOX_WIDTH,
+            BOX_WIDTH_Z,
             BOX_HEIGHT,
             meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-                BOX_WIDTH, BOX_HEIGHT,
+                BOX_WIDTH_Z,
+                BOX_HEIGHT,
             )))),
             wall_mat.clone(),
             Quat::from_rotation_y(side * PI / 2.0),
@@ -93,11 +96,12 @@ fn spawn_box(
     // Boxes that are in the positive z and negative z direction
     for side in [-1.0f32, 1.0] {
         commands.spawn(WallBundle::new(
-            Vec3::new(0., 0., side * BOX_X),
-            BOX_WIDTH,
+            Vec3::new(0., 0., side * BOX_Z),
+            BOX_WIDTH_X,
             BOX_HEIGHT,
             meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-                BOX_WIDTH, BOX_HEIGHT,
+                BOX_WIDTH_X,
+                BOX_HEIGHT,
             )))),
             wall_mat.clone(),
             Quat::from_rotation_y((side - 1.0) * PI / 2.0),
@@ -115,10 +119,11 @@ fn spawn_box(
     });
     commands.spawn(WallBundle::new(
         Vec3::new(0., -BOX_Y, 0.),
-        BOX_WIDTH + BOX_THICKNESS,
-        BOX_WIDTH + BOX_THICKNESS,
+        BOX_WIDTH_X + BOX_THICKNESS,
+        BOX_WIDTH_Z + BOX_THICKNESS,
         meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-            BOX_WIDTH, BOX_WIDTH,
+            BOX_WIDTH_X,
+            BOX_WIDTH_Z,
         )))),
         base_mat.clone(),
         Quat::from_rotation_x(PI / 2.0),
@@ -135,23 +140,23 @@ fn spawn_box(
             Mesh::ATTRIBUTE_POSITION,
             vec![
                 // 4 vertical lines
-                [-BOX_X, -BOX_Y, -BOX_X],
-                [-BOX_X, BOX_Y, -BOX_X],
-                [-BOX_X, -BOX_Y, BOX_X],
-                [-BOX_X, BOX_Y, BOX_X],
-                [BOX_X, -BOX_Y, -BOX_X],
-                [BOX_X, BOX_Y, -BOX_X],
-                [BOX_X, -BOX_Y, BOX_X],
-                [BOX_X, BOX_Y, BOX_X],
+                [-BOX_X, -BOX_Y, -BOX_Z],
+                [-BOX_X, BOX_Y, -BOX_Z],
+                [-BOX_X, -BOX_Y, BOX_Z],
+                [-BOX_X, BOX_Y, BOX_Z],
+                [BOX_X, -BOX_Y, -BOX_Z],
+                [BOX_X, BOX_Y, -BOX_Z],
+                [BOX_X, -BOX_Y, BOX_Z],
+                [BOX_X, BOX_Y, BOX_Z],
                 // 4 horizontal lines on top making the square
-                [-BOX_X, BOX_Y, -BOX_X],
-                [-BOX_X, BOX_Y, BOX_X],
-                [-BOX_X, BOX_Y, -BOX_X],
-                [BOX_X, BOX_Y, -BOX_X],
-                [BOX_X, BOX_Y, -BOX_X],
-                [BOX_X, BOX_Y, BOX_X],
-                [-BOX_X, BOX_Y, BOX_X],
-                [BOX_X, BOX_Y, BOX_X],
+                [-BOX_X, BOX_Y, -BOX_Z],
+                [-BOX_X, BOX_Y, BOX_Z],
+                [-BOX_X, BOX_Y, -BOX_Z],
+                [BOX_X, BOX_Y, -BOX_Z],
+                [BOX_X, BOX_Y, -BOX_Z],
+                [BOX_X, BOX_Y, BOX_Z],
+                [-BOX_X, BOX_Y, BOX_Z],
+                [BOX_X, BOX_Y, BOX_Z],
             ],
         ),
     );
