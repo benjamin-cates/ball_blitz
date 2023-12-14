@@ -181,7 +181,7 @@ impl Ball {
         out
     }
     pub fn get_meshes(size: u8, templates: &BallTemplates, commands: &mut Commands) -> Vec<Entity> {
-        templates.meshes[size as usize]
+        templates.meshes[if size > 9 { 9 } else { size } as usize]
             .iter()
             .map(|pbr_bundle| commands.spawn(pbr_bundle.clone()).id())
             .collect()
