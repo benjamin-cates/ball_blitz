@@ -43,3 +43,16 @@ wasm-opt -Oz -o out/ball_blitz_bg.wasm out/ball_blitz_bg.wasm
 First time compilation will take about 10 minutes and the size of the wasm binary at `out/ball_blitz_bg.wasm` should be about 20 MB.
 5. Host the project directory over http and open localhost in the browser.
 
+## Additional dependencies for compiling on WSL Ubuntu
+
+You'll need the `alsa` audio library and `libudev-dev`.
+```bash
+sudo apt install librust-alsa-sys-dev libudev-dev
+```
+
+You'll also need to update mesa
+```bash
+sudo add-apt-repository ppa:kisak/kisak-mesa
+sudo apt update
+sudo apt upgrade
+```
