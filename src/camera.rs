@@ -1,3 +1,4 @@
+use crate::scene_setup::BOX_HEIGHT;
 use bevy::input::mouse::MouseMotion;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
@@ -11,8 +12,8 @@ const CAMERA_DIST: f32 = 30.0;
 pub fn new_camera() -> (Camera3dBundle, CameraAngle) {
     (
         Camera3dBundle {
-            transform: Transform::from_xyz(CAMERA_DIST, 6.0, 0.0)
-                .looking_at(Vec3::new(0.0, 6.0, 0.0), Vec3::Y),
+            transform: Transform::from_xyz(CAMERA_DIST, BOX_HEIGHT / 2.0, 0.0)
+                .looking_at(Vec3::new(0.0, BOX_HEIGHT / 2.0, 0.0), Vec3::Y),
             ..default()
         },
         CameraAngle(0.0, 0.0),
@@ -43,8 +44,8 @@ pub fn orbit_camera(
             pos.1 = pos.1.clamp(-PI / 2.0, PI / 2.0);
             transform.rotation = Quat::from_euler(EulerRot::YXZ, pos.0, pos.1, 0.0);
             let rot_matrix = Mat3::from_quat(transform.rotation);
-            transform.translation =
-                rot_matrix.mul_vec3(Vec3::new(0.0, 0.0, CAMERA_DIST)) + Vec3::new(0.0, 6.0, 0.0);
+            transform.translation = rot_matrix.mul_vec3(Vec3::new(0.0, 0.0, CAMERA_DIST))
+                + Vec3::new(0.0, BOX_HEIGHT / 2.0, 0.0);
         }
     }
 }
