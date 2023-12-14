@@ -2,23 +2,28 @@ use bevy::ecs::system::EntityCommands;
 use bevy::prelude::*;
 use bevy_xpbd_3d::prelude::*;
 
+/// BallSize component for the Ball bundle
 #[derive(Component)]
 pub struct BallSize(pub u8);
 
+/// Tag added to the example ball to recognize it in queries
 #[derive(Component)]
 pub struct ExampleBall(pub ());
 
+/// Stores each ball template as a list of PbrBundles
 #[derive(Resource)]
 pub struct BallTemplates {
     meshes: Vec<Vec<PbrBundle>>,
 }
 
+/// Creates an instance of BallTemplates and inserts it as a resource
 pub fn load_ball_templates(
     mut commands: Commands,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
     assets: Res<AssetServer>,
 ) {
+    // Default colors for balls
     let colors: Vec<Color> = vec![
         Color::rgb(1.0, 0.5, 1.0),       // Zero ball (not used)
         Color::rgb(1.0, 0.45, 0.3),      // Ping pong
@@ -31,6 +36,8 @@ pub fn load_ball_templates(
         Color::rgb(1.0, 1.0, 1.0),       // Beach ball
         Color::rgb(1.0, 0.0, 1.0),
     ];
+    // List of models for different ball sizes
+    // Each has file name (in assets directory), scale, and list of primitives with their material
     let models: Vec<Option<(&'static str, f32, Vec<(&'static str, &'static str)>)>> = vec![
         None,
         None,
@@ -96,6 +103,7 @@ pub fn load_ball_templates(
     ];
     let pbr_bundles: Vec<Vec<PbrBundle>> = (0..10u8)
         .map(|idx| match &models[idx as usize] {
+            // If no texture provided, spawn a sphere based on colors
             None => vec![PbrBundle {
                 material: materials.add(StandardMaterial {
                     base_color: colors[idx as usize],
@@ -110,6 +118,7 @@ pub fn load_ball_templates(
                 })),
                 ..default()
             }],
+            // If texture is provided, load each mesh using a handle
             Some((file, scale, meshes)) => meshes
                 .iter()
                 .map(|(mesh, mat)| PbrBundle {
@@ -130,17 +139,21 @@ pub fn load_ball_templates(
 }
 
 impl BallSize {
+    /// Return the floating point radius of a ball bundle
     pub fn radius(&self) -> f32 {
         self.0 as f32 * 0.3 + 0.4
     }
+    /// Return the radius of the smaller starting ball
     pub fn start_radius(&self) -> f32 {
         (self.0 as f32 * 0.3 - 0.3 + 0.4) * 0.95
     }
+    /// Return the scale factor between the previous ball size and the current ball size
     pub fn scale(&self) -> f32 {
         self.radius() / self.start_radius()
     }
 }
 
+/// Bundle that represnts a ball object
 #[derive(Bundle)]
 pub struct Ball {
     pub size: BallSize,
@@ -172,6 +185,7 @@ impl Default for Ball {
 }
 
 impl Ball {
+    /// Create a new ball from specific size
     pub fn new(size: u8) -> Self {
         let mut out: Ball = Ball::default();
         out.size = BallSize(size);
@@ -180,12 +194,14 @@ impl Ball {
         out.mass = Mass((size as f32) * (size as f32) * 10.0);
         out
     }
+    /// Spawn meshes for a specific ball size and return them as a vector of entities
     pub fn get_meshes(size: u8, templates: &BallTemplates, commands: &mut Commands) -> Vec<Entity> {
         templates.meshes[if size > 9 { 9 } else { size } as usize]
             .iter()
             .map(|pbr_bundle| commands.spawn(pbr_bundle.clone()).id())
             .collect()
     }
+    /// Spawn a ball (consumes the bundle) and returns its EntityCommands
     pub fn spawn<'w, 's, 'a>(
         self,
         templates: &BallTemplates,

@@ -7,7 +7,7 @@ use rand::{self, Rng};
 /// Iterate over every pair of balls and check if they should be merged
 pub fn insertion_check(
     window: Query<&Window, With<PrimaryWindow>>,
-    query: Query<(&Camera, &GlobalTransform)>,
+    cam_query: Query<(&Camera, &GlobalTransform)>,
     buttons: Res<Input<MouseButton>>,
     keys: Res<Input<KeyCode>>,
     ball_templates: Res<BallTemplates>,
@@ -22,7 +22,7 @@ pub fn insertion_check(
     if cursor.is_none() {
         return;
     }
-    let (camera, transform) = query.single();
+    let (camera, transform) = cam_query.single();
     let ray = camera.viewport_to_world(transform, cursor.unwrap());
     if ray.is_none() {
         return;

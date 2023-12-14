@@ -19,6 +19,7 @@ pub fn new_camera() -> (Camera3dBundle, CameraAngle) {
     )
 }
 
+/// Orbit camera event on mouse move, only active while clicked
 pub fn orbit_camera(
     window: Query<&Window, With<PrimaryWindow>>,
     mut ev_motion: EventReader<MouseMotion>,
