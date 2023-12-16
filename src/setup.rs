@@ -2,14 +2,15 @@ use crate::{balls, camera};
 use bevy::{prelude::*, render::render_resource::PrimitiveTopology};
 use bevy_xpbd_3d::{math::PI, prelude::*};
 
-const BOX_THICKNESS: f32 = 0.5;
-
 #[derive(Resource)]
 pub struct BoxSize {
     pub x: f32,
     pub y: f32,
     pub z: f32,
 }
+
+#[derive(Component)]
+pub struct BoxTag(pub ());
 
 #[derive(Bundle)]
 struct WallBundle {
@@ -21,19 +22,43 @@ struct WallBundle {
 
 impl WallBundle {
     fn new(
-        pos: Vec3,
-        xlen: f32,
-        zlen: f32,
-        mesh: Handle<Mesh>,
+        box_size: &BoxSize,
+        direction: char,
+        side: f32,
+        meshes: &mut ResMut<Assets<Mesh>>,
         material: Handle<StandardMaterial>,
-        rotation: Quat,
     ) -> Self {
+        let pos = match direction {
+            'x' => Vec3::new(side * box_size.x, 0., 0.),
+            'y' => Vec3::new(0., side * box_size.y, 0.),
+            'z' => Vec3::new(0., 0., side * box_size.z),
+            ch => panic!("Unexpected direction {}", ch),
+        };
+        let width = 2.
+            * match direction {
+                'x' => box_size.z,
+                'y' => box_size.x,
+                'z' => box_size.x,
+                ch => panic!("Unexpected direction {}", ch),
+            };
+        let height = 2.
+            * match direction {
+                'x' => box_size.y,
+                'y' => box_size.z,
+                'z' => box_size.y,
+                ch => panic!("Unexpected direction {}", ch),
+            };
+        let rotation = if direction == 'y' {
+            Quat::from_rotation_x(-side * PI / 2.)
+        } else {
+            Quat::from_rotation_y(if direction == 'x' { side } else { side - 1. } * PI / 2.)
+        };
         return Self {
             shadows: bevy::pbr::NotShadowCaster {},
             rigid_body: RigidBody::Static,
-            collider: Collider::cuboid(xlen, zlen, 0.01),
+            collider: Collider::cuboid(width, height, 0.01),
             pbr_bundle: PbrBundle {
-                mesh,
+                mesh: meshes.add(Mesh::from(shape::Quad::new(Vec2::new(width, height)))),
                 transform: Transform {
                     translation: pos,
                     rotation,
@@ -72,6 +97,7 @@ fn spawn_box(
     materials: &mut ResMut<Assets<StandardMaterial>>,
     meshes: &mut ResMut<Assets<Mesh>>,
 ) {
+    let mut bundles: Vec<Entity> = vec![];
     let box_size = BoxSize {
         x: 4.0,
         y: 6.0,
@@ -87,31 +113,19 @@ fn spawn_box(
 
     // Boxes that are in the positive x and negative x direction
     for side in [-1.0f32, 1.0] {
-        commands.spawn(WallBundle::new(
-            Vec3::new(side * box_size.x, 0., 0.),
-            box_size.z * 2.,
-            box_size.y * 2.0,
-            meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-                box_size.z * 2.,
-                box_size.y * 2.0,
-            )))),
-            wall_mat.clone(),
-            Quat::from_rotation_y(side * PI / 2.0),
-        ));
-    }
-    // Boxes that are in the positive z and negative z direction
-    for side in [-1.0f32, 1.0] {
-        commands.spawn(WallBundle::new(
-            Vec3::new(0., 0., side * box_size.z),
-            box_size.x * 2.,
-            box_size.y * 2.,
-            meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-                box_size.x * 2.,
-                box_size.y * 2.,
-            )))),
-            wall_mat.clone(),
-            Quat::from_rotation_y((side - 1.0) * PI / 2.0),
-        ));
+        for dir in ['x', 'z'] {
+            bundles.push(
+                commands
+                    .spawn(WallBundle::new(
+                        &box_size,
+                        dir,
+                        side,
+                        meshes,
+                        wall_mat.clone(),
+                    ))
+                    .id(),
+            );
+        }
     }
     // Base of the box
     let base_mat = materials.add(StandardMaterial {
@@ -123,17 +137,17 @@ fn spawn_box(
         cull_mode: None,
         ..default()
     });
-    commands.spawn(WallBundle::new(
-        Vec3::new(0., -box_size.y, 0.),
-        box_size.x * 2. + BOX_THICKNESS,
-        box_size.z * 2. + BOX_THICKNESS,
-        meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-            box_size.x * 2.,
-            box_size.z * 2.,
-        )))),
-        base_mat.clone(),
-        Quat::from_rotation_x(PI / 2.0),
-    ));
+    bundles.push(
+        commands
+            .spawn(WallBundle::new(
+                &box_size,
+                'y',
+                -1.,
+                meshes,
+                base_mat.clone(),
+            ))
+            .id(),
+    );
 
     // Black lines representing the edges of the box
     let line_mat = materials.add(StandardMaterial {
@@ -167,11 +181,17 @@ fn spawn_box(
         ),
     );
     commands.insert_resource(box_size);
-    commands.spawn(PbrBundle {
-        mesh: line_mesh,
-        material: line_mat,
-        ..default()
-    });
+    bundles.push(
+        commands
+            .spawn(PbrBundle {
+                mesh: line_mesh,
+                material: line_mat,
+                ..default()
+            })
+            .id(),
+    );
+    let mut box_ent = commands.spawn((BoxTag(()), SpatialBundle::default()));
+    box_ent.push_children(bundles.as_ref());
 }
 
 // Spawn two direcitonal lights and an ambient light
