@@ -1,4 +1,5 @@
 use crate::balls::*;
+use crate::setup::BoxScaleEvent;
 use bevy::prelude::*;
 use bevy_xpbd_3d::prelude::*;
 
@@ -11,6 +12,7 @@ pub fn merge_check(
     mut commands: Commands,
     ball_templates: Res<BallTemplates>,
     mut animations: ResMut<Assets<AnimationClip>>,
+    mut scale_event: EventWriter<BoxScaleEvent>,
 ) {
     let mut combinations = query.iter_combinations_mut();
     while let Some([(ent1, size1, vel1, trans1), (ent2, size2, vel2, trans2)]) =
@@ -71,5 +73,12 @@ pub fn merge_check(
                 player.play(animations.add(animation)).set_speed(2.0);
                 player
             });
+        if size1.0 + 1 == 9 {
+            scale_event.send(BoxScaleEvent {
+                x: 4.0,
+                y: 7.0,
+                z: 6.0,
+            });
+        }
     }
 }

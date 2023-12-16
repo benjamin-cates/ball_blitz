@@ -9,6 +9,22 @@ pub struct BoxSize {
     pub z: f32,
 }
 
+impl Default for BoxSize {
+    fn default() -> Self {
+        Self {
+            x: 4.,
+            y: 6.,
+            z: 4.,
+        }
+    }
+}
+
+#[derive(Event)]
+pub struct BoxScaleEvent {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
 #[derive(Component)]
 pub struct BoxTag(pub ());
 
@@ -98,11 +114,7 @@ fn spawn_box(
     meshes: &mut ResMut<Assets<Mesh>>,
 ) {
     let mut bundles: Vec<Entity> = vec![];
-    let box_size = BoxSize {
-        x: 4.0,
-        y: 6.0,
-        z: 4.0,
-    };
+    let box_size = BoxSize::default();
     let wall_mat = materials.add(StandardMaterial {
         alpha_mode: AlphaMode::Blend,
         base_color: Color::rgba(0.3, 0.3, 0.3, 0.12),
