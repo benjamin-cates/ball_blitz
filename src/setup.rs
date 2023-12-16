@@ -2,13 +2,14 @@ use crate::{balls, camera};
 use bevy::{prelude::*, render::render_resource::PrimitiveTopology};
 use bevy_xpbd_3d::{math::PI, prelude::*};
 
-pub const BOX_HEIGHT: f32 = 12.0;
-pub const BOX_WIDTH_X: f32 = 8.0;
-pub const BOX_WIDTH_Z: f32 = 8.0;
-pub const BOX_X: f32 = BOX_WIDTH_X / 2.0;
-pub const BOX_Y: f32 = BOX_HEIGHT / 2.0;
-pub const BOX_Z: f32 = BOX_WIDTH_Z / 2.0;
 const BOX_THICKNESS: f32 = 0.5;
+
+#[derive(Resource)]
+pub struct BoxSize {
+    pub x: f32,
+    pub y: f32,
+    pub z: f32,
+}
 
 #[derive(Bundle)]
 struct WallBundle {
@@ -55,7 +56,7 @@ pub(crate) fn setup(
     spawn_lights(&mut commands);
     commands.spawn(camera::new_camera());
     let mut example_ball = balls::Ball::new(1);
-    example_ball.spatial.transform.translation = Vec3::new(0.0, BOX_Y, 0.0);
+    example_ball.spatial.transform.translation = Vec3::new(0.0, 400000.0, 0.0);
     example_ball
         .spawn(&ball_templates, &mut commands)
         .insert(balls::ExampleBall(()))
@@ -71,6 +72,11 @@ fn spawn_box(
     materials: &mut ResMut<Assets<StandardMaterial>>,
     meshes: &mut ResMut<Assets<Mesh>>,
 ) {
+    let box_size = BoxSize {
+        x: 4.0,
+        y: 6.0,
+        z: 4.0,
+    };
     let wall_mat = materials.add(StandardMaterial {
         alpha_mode: AlphaMode::Blend,
         base_color: Color::rgba(0.3, 0.3, 0.3, 0.12),
@@ -82,12 +88,12 @@ fn spawn_box(
     // Boxes that are in the positive x and negative x direction
     for side in [-1.0f32, 1.0] {
         commands.spawn(WallBundle::new(
-            Vec3::new(side * BOX_X, 0., 0.),
-            BOX_WIDTH_Z,
-            BOX_HEIGHT,
+            Vec3::new(side * box_size.x, 0., 0.),
+            box_size.z * 2.,
+            box_size.y * 2.0,
             meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-                BOX_WIDTH_Z,
-                BOX_HEIGHT,
+                box_size.z * 2.,
+                box_size.y * 2.0,
             )))),
             wall_mat.clone(),
             Quat::from_rotation_y(side * PI / 2.0),
@@ -96,12 +102,12 @@ fn spawn_box(
     // Boxes that are in the positive z and negative z direction
     for side in [-1.0f32, 1.0] {
         commands.spawn(WallBundle::new(
-            Vec3::new(0., 0., side * BOX_Z),
-            BOX_WIDTH_X,
-            BOX_HEIGHT,
+            Vec3::new(0., 0., side * box_size.z),
+            box_size.x * 2.,
+            box_size.y * 2.,
             meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-                BOX_WIDTH_X,
-                BOX_HEIGHT,
+                box_size.x * 2.,
+                box_size.y * 2.,
             )))),
             wall_mat.clone(),
             Quat::from_rotation_y((side - 1.0) * PI / 2.0),
@@ -118,12 +124,12 @@ fn spawn_box(
         ..default()
     });
     commands.spawn(WallBundle::new(
-        Vec3::new(0., -BOX_Y, 0.),
-        BOX_WIDTH_X + BOX_THICKNESS,
-        BOX_WIDTH_Z + BOX_THICKNESS,
+        Vec3::new(0., -box_size.y, 0.),
+        box_size.x * 2. + BOX_THICKNESS,
+        box_size.z * 2. + BOX_THICKNESS,
         meshes.add(Mesh::from(shape::Quad::new(Vec2::new(
-            BOX_WIDTH_X,
-            BOX_WIDTH_Z,
+            box_size.x * 2.,
+            box_size.z * 2.,
         )))),
         base_mat.clone(),
         Quat::from_rotation_x(PI / 2.0),
@@ -140,26 +146,27 @@ fn spawn_box(
             Mesh::ATTRIBUTE_POSITION,
             vec![
                 // 4 vertical lines
-                [-BOX_X, -BOX_Y, -BOX_Z],
-                [-BOX_X, BOX_Y, -BOX_Z],
-                [-BOX_X, -BOX_Y, BOX_Z],
-                [-BOX_X, BOX_Y, BOX_Z],
-                [BOX_X, -BOX_Y, -BOX_Z],
-                [BOX_X, BOX_Y, -BOX_Z],
-                [BOX_X, -BOX_Y, BOX_Z],
-                [BOX_X, BOX_Y, BOX_Z],
+                [-box_size.x, -box_size.y, -box_size.z],
+                [-box_size.x, box_size.y, -box_size.z],
+                [-box_size.x, -box_size.y, box_size.z],
+                [-box_size.x, box_size.y, box_size.z],
+                [box_size.x, -box_size.y, -box_size.z],
+                [box_size.x, box_size.y, -box_size.z],
+                [box_size.x, -box_size.y, box_size.z],
+                [box_size.x, box_size.y, box_size.z],
                 // 4 horizontal lines on top making the square
-                [-BOX_X, BOX_Y, -BOX_Z],
-                [-BOX_X, BOX_Y, BOX_Z],
-                [-BOX_X, BOX_Y, -BOX_Z],
-                [BOX_X, BOX_Y, -BOX_Z],
-                [BOX_X, BOX_Y, -BOX_Z],
-                [BOX_X, BOX_Y, BOX_Z],
-                [-BOX_X, BOX_Y, BOX_Z],
-                [BOX_X, BOX_Y, BOX_Z],
+                [-box_size.x, box_size.y, -box_size.z],
+                [-box_size.x, box_size.y, box_size.z],
+                [-box_size.x, box_size.y, -box_size.z],
+                [box_size.x, box_size.y, -box_size.z],
+                [box_size.x, box_size.y, -box_size.z],
+                [box_size.x, box_size.y, box_size.z],
+                [-box_size.x, box_size.y, box_size.z],
+                [box_size.x, box_size.y, box_size.z],
             ],
         ),
     );
+    commands.insert_resource(box_size);
     commands.spawn(PbrBundle {
         mesh: line_mesh,
         material: line_mat,

@@ -1,6 +1,6 @@
 mod balls;
 mod camera;
-mod scene_setup;
+mod setup;
 
 use bevy::pbr::DirectionalLightShadowMap;
 use bevy::prelude::*;
@@ -13,7 +13,7 @@ fn main() {
         .add_plugins((DefaultPlugins, PhysicsPlugins::default()))
         .add_plugins(WindowResizePlugin)
         .add_systems(Startup, balls::load_ball_templates)
-        .add_systems(PostStartup, scene_setup::setup)
+        .add_systems(PostStartup, setup::setup)
         .add_systems(Update, balls::merge_check)
         .add_systems(Update, balls::insertion_check)
         .add_systems(Update, camera::orbit_camera)
