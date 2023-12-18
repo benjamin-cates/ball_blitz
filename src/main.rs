@@ -24,6 +24,12 @@ fn main() {
             scene_scale::box_scale.run_if(on_event::<BoxScaleEvent>()),
         )
         .add_event::<BoxScaleEvent>()
+        .insert_resource(GizmoConfig {
+            line_width: 100.0,
+            line_perspective: true,
+            depth_bias: 0.,
+            ..default()
+        })
         .insert_resource(Gravity(Vec3::new(0.0, -45.0, 0.0)))
         .insert_resource(DirectionalLightShadowMap { size: 4096 })
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))

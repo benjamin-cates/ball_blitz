@@ -52,7 +52,7 @@ pub fn insertion_check(
     // Draw example ball and line
     gizmos.ray(
         point,
-        Vec3::new(0.0, -box_size.y * 2. - 0.2, 0.0),
+        Vec3::new(0.0, -box_size.y * 2. + 0.1, 0.0),
         Color::GREEN,
     );
     example_ball.1.translation = point;
