@@ -208,34 +208,34 @@ fn spawn_box(
 
 // Spawn two direcitonal lights and an ambient light
 fn spawn_lights(commands: &mut Commands) {
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight {
-            illuminance: 4000.0,
+    commands.spawn(SpotLightBundle {
+        transform: Transform::from_xyz(30., 12., 5.).looking_at(Vec3::ZERO, Vec3::Y),
+        spot_light: SpotLight {
+            color: Color::rgb(1., 0.8, 0.8),
             shadows_enabled: true,
-            color: Color::rgb(1.0, 1.0, 0.8),
-            ..default()
-        },
-        transform: Transform {
-            rotation: Quat::from_rotation_y(1.2) * Quat::from_rotation_x(-0.5),
+            intensity: 80000.,
+            inner_angle: PI / 10.,
+            outer_angle: PI / 10.,
+            range: 50.,
             ..default()
         },
         ..default()
     });
-    commands.spawn(DirectionalLightBundle {
-        directional_light: DirectionalLight {
-            illuminance: 8000.0,
+    commands.spawn(SpotLightBundle {
+        transform: Transform::from_xyz(-10., 4., 30.).looking_at(Vec3::ZERO, Vec3::Y),
+        spot_light: SpotLight {
+            color: Color::rgb(1., 1., 0.8),
             shadows_enabled: true,
-            color: Color::rgb(1.0, 1.0, 0.8),
-            ..default()
-        },
-        transform: Transform {
-            rotation: Quat::from_rotation_y(2.6) * Quat::from_rotation_x(-0.8),
+            intensity: 120000.,
+            inner_angle: PI / 10.,
+            outer_angle: PI / 10.,
+            range: 50.,
             ..default()
         },
         ..default()
     });
     commands.insert_resource(AmbientLight {
         color: Color::WHITE,
-        brightness: 0.5,
+        brightness: 0.8,
     });
 }
