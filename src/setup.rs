@@ -142,9 +142,8 @@ fn spawn_box(
     // Base of the box
     let base_mat = materials.add(StandardMaterial {
         base_color: Color::rgba(0.1, 0.4, 0.2, 1.0),
-        metallic: 0.6,
-        perceptual_roughness: 0.3,
         double_sided: true,
+        reflectance: 0.1,
         cull_mode: None,
         ..default()
     });
