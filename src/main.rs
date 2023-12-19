@@ -1,5 +1,6 @@
 mod balls;
 mod camera;
+mod points;
 mod scene_scale;
 mod setup;
 
@@ -15,6 +16,7 @@ fn main() {
         .add_plugins((DefaultPlugins, PhysicsPlugins::default()))
         .add_plugins(WindowResizePlugin)
         .add_systems(Startup, balls::load_ball_templates)
+        .add_systems(Startup, points::spawn_points_ui)
         .add_systems(PostStartup, setup::setup)
         .add_systems(Update, balls::merge_check)
         .add_systems(Update, balls::insertion_check)
@@ -30,6 +32,12 @@ fn main() {
             depth_bias: 0.,
             ..default()
         })
+        .add_systems(Update, points::ball_out_of_bounds)
+        .add_systems(
+            Update,
+            points::update_points.run_if(resource_changed::<points::GamePoints>()),
+        )
+        .insert_resource(points::GamePoints(0))
         .insert_resource(Gravity(Vec3::new(0.0, -45.0, 0.0)))
         .insert_resource(DirectionalLightShadowMap { size: 4096 })
         .insert_resource(ClearColor(Color::rgb(0.4, 0.4, 0.4)))

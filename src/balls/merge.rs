@@ -1,4 +1,5 @@
 use crate::balls::*;
+use crate::points;
 use crate::setup::BoxScaleEvent;
 use bevy::prelude::*;
 use bevy_xpbd_3d::prelude::*;
@@ -13,6 +14,7 @@ pub fn merge_check(
     ball_templates: Res<BallTemplates>,
     mut animations: ResMut<Assets<AnimationClip>>,
     mut scale_event: EventWriter<BoxScaleEvent>,
+    mut points: ResMut<points::GamePoints>,
 ) {
     let mut combinations = query.iter_combinations_mut();
     while let Some([(ent1, size1, vel1, trans1), (ent2, size2, vel2, trans2)]) =
@@ -45,6 +47,7 @@ pub fn merge_check(
             / BallSize(size1.0 + 1).start_radius()
             * 0.9;
         new_trans.scale = Vec3::from_array([start; 3]);
+        points.as_mut().0 += size1.0 as i32 * size1.0 as i32;
         let mut new_ball = Ball::new(size1.0 + 1);
         new_ball.spatial.transform = new_trans;
         new_ball.collider.set_scale(new_trans.scale, 0);

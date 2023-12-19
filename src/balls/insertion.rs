@@ -1,4 +1,5 @@
 use crate::balls::*;
+use crate::points;
 use crate::setup::BoxSize;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
@@ -19,6 +20,7 @@ pub fn insertion_check(
         (&BallSize, &mut Transform, Entity, &mut Visibility),
         With<ExampleBall>,
     >,
+    mut points: ResMut<points::GamePoints>,
 ) {
     let cursor = window.single().cursor_position();
     if cursor.is_none() {
@@ -58,6 +60,8 @@ pub fn insertion_check(
     example_ball.1.translation = point;
     //Check if mouse pressed
     if buttons.just_pressed(MouseButton::Left) {
+        // Add points
+        points.as_mut().0 += size as i32;
         // Spawn ball
         let mut new_ball = Ball::new(size);
         new_ball.spatial.transform.translation = point;
