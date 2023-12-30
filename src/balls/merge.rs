@@ -17,15 +17,17 @@ pub fn merge_check(
     mut points: ResMut<points::GamePoints>,
 ) {
     let mut combinations = query.iter_combinations_mut();
+    let mut removed: Option<Vec<Entity>> = None;
     while let Some([(ent1, size1, vel1, trans1), (ent2, size2, vel2, trans2)]) =
         combinations.fetch_next()
     {
         if size1.0 != size2.0 {
             continue;
         }
-        if commands.get_entity(ent1).is_none() || commands.get_entity(ent2).is_none() {
-            println!("Skipping non-existant");
-            continue;
+        if let Some(ref vec) = removed {
+            if vec.contains(&ent1) || vec.contains(&ent2) {
+                continue;
+            }
         }
         // Skip if not intersecting
         if trans1.translation.distance_squared(trans2.translation)
@@ -42,6 +44,12 @@ pub fn merge_check(
         // Despawn merged balls
         commands.entity(ent1).despawn_recursive();
         commands.entity(ent2).despawn_recursive();
+        if let Some(ref mut vec) = removed {
+            vec.push(ent1);
+            vec.push(ent2);
+        } else {
+            removed = Some(vec![ent1, ent2]);
+        }
         let name = Name::new("combined".to_owned() + format!("{}", size1.0 + 1).as_str());
         let start = new_trans.scale.x * BallSize(size1.0).start_radius()
             / BallSize(size1.0 + 1).start_radius()
