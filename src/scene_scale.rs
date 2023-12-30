@@ -1,5 +1,6 @@
 use crate::setup::{BoxScaleEvent, BoxSize, BoxTag};
 use bevy::prelude::*;
+use bevy_xpbd_3d::prelude::Collider;
 
 pub(crate) fn box_scale(
     mut event: EventReader<BoxScaleEvent>,
@@ -7,12 +8,31 @@ pub(crate) fn box_scale(
     mut commands: Commands,
     mut query: Query<Entity, With<BoxTag>>,
     mut animations: ResMut<Assets<AnimationClip>>,
+    mut q_walls: Query<(&crate::setup::WallTag, &mut Collider)>,
 ) {
     if event.is_empty() {
         return;
     }
     let new_size = event.read().next().unwrap();
     let ent = query.single_mut();
+    // NOTE: doing this hack until the scaling issue is fixed in bevy_xpbd
+    for (tag, mut collider) in q_walls.iter_mut() {
+        *collider = Collider::cuboid(
+            2. * match tag.0 {
+                'x' => new_size.z,
+                'y' => new_size.x,
+                'z' => new_size.x,
+                _ => todo!(),
+            },
+            2. * match tag.0 {
+                'x' => new_size.y,
+                'y' => new_size.z,
+                'z' => new_size.y,
+                _ => todo!(),
+            },
+            0.01,
+        );
+    }
     let name = Name::new("Box");
     commands.entity(ent).insert(name.clone()).insert({
         let mut player = AnimationPlayer::default();

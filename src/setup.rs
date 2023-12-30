@@ -28,12 +28,16 @@ pub struct BoxScaleEvent {
 #[derive(Component)]
 pub struct BoxTag(pub ());
 
+#[derive(Component)]
+pub struct WallTag(pub char, pub f32);
+
 #[derive(Bundle)]
 struct WallBundle {
     rigid_body: RigidBody,
     collider: Collider,
     pbr_bundle: PbrBundle,
     shadows: bevy::pbr::NotShadowCaster,
+    tag: WallTag,
 }
 
 impl WallBundle {
@@ -83,6 +87,7 @@ impl WallBundle {
                 material,
                 ..default()
             },
+            tag: WallTag(direction, side),
         };
     }
 }
