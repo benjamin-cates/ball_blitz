@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Ball Blitz</title>
+        <script type="module" async>
+            import init from './ball_blitz.js'
+            init().catch((error) => {
+              if (!error.message.startsWith(
+                "Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
+                throw error;
+              }
+            });
+        </script>
+    </head>
+    <style>
+        body {
+            margin: 0px;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+    </style>
+    <body>
+    </body>
+</html>
