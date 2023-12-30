@@ -19,3 +19,12 @@ opt-level = 1
 # Enable high optimizations for dependencies (incl. Bevy), but not for our code:
 [profile.dev.package."*"]
 opt-level = 3
+
+# Reduce code size for wasm build
+[profile.release]
+lto = true
+opt-level = 's'
+
+[features]
+default = ["fast_build"]
+fast_build = ["bevy/dynamic_linking"]
