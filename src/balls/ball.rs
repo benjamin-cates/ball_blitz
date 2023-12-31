@@ -49,7 +49,7 @@ pub fn load_ball_templates(
                 ("Mesh0/Primitive0", "Material0"),
                 ("Mesh0/Primitive1", "Material1"),
                 ("Mesh1/Primitive0", "Material2"),
-                ("Mesh2/Primitive0", "Material0"),
+                ("Mesh2/Primitive0", "Material3"),
             ],
         )),
         Some((
