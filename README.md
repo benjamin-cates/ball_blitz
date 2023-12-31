@@ -1,4 +1,6 @@
-# Ball Blitz
+# [Ball Blitz](https://benjamin-cates.github.io/ball_blitz)
+
+View the project hosted [here](https://benjamin-cates.github.io/ball_blitz)!
 
 Ball Blitz is a 3D ball matching game built with the [Bevy game engine](https://github.com/bevyengine/bevy) in Rust. It's a fun matching game based on [Suika game](https://suika-game.app/). 
 
