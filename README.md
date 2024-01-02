@@ -2,11 +2,11 @@
 
 View the project hosted [here](https://benjamin-cates.github.io/ball_blitz)!
 
-Ball Blitz is a 3D ball matching game built with the [Bevy game engine](https://github.com/bevyengine/bevy) in Rust. It's a fun matching game based on [Suika game](https://suika-game.app/). 
+Ball Blitz is a 3D ball matching game built with the [Bevy game engine](https://github.com/bevyengine/bevy) in Rust. It was originally based on [Suika game](https://suika-game.app/), but uses a sports ball theme and is in 3D. 
 
 ## Game description
 
-The scene is a 3D transparent box that can be moved with an orbit camera. The player is able to insert a ball of a certain size in the open roof of the box. If two balls of the same type touch, they merge to create a larger ball that is a different type. The current order of balls is 
+The main play area has a transparent box that has an orbit camera around it. The player gets balls of random size from ping pong to tennis ball that they can spawn at the top of the box. If two balls of the same type touch, they merge to create the next largest ball. The current order of balls is:
 
 1. Ping Pong ball
 2. Golf ball
@@ -19,17 +19,17 @@ The scene is a 3D transparent box that can be moved with an orbit camera. The pl
 9. Beach ball
 10. ??? (to be added later)
 
-Anything between ping pong and tennis ball will be randomly selected for the player to insert next. The goal of the game is to create a beach ball without having any fall out of the arena.
+
+Points are gained when spawning balls and when merging balls, and points are lost when balls don't fit in the box and fall. The goal of the game is to create a beach ball without going into negative points.
 
 ## Compiling (native)
-Currently, the project does not have a WebAssembly port, so you will have to compile it to run it.
 1. Clone the repository with `git clone https://github.com/benjamin-cates/ball_blitz`
 2. Install the rust compiler toolchain from rustup
 2. Compile and run with `cargo run` in the project directory. 
-A window with the game will pop up. Note that this does not work in WSL right now because the window manager is buggy. If you have problems with the linker, turn off the "dynamic-linking" feature in `Cargo.toml`, which will make the compilation take much longer but might fix a linker issue.
+A window with the game will pop up. Note that if you are on WSL also follow the WSL instructions If you have problems with the linker, build with `cargo run --no-default-features` to turn off the "dynamic-linking", which will make the compilation take much longer but might fix a linker issue.
 
 ## Compiling (WebAssembly)
-Note: WebAssembly compilation should happen on the `web` branch. Merge changes from main into the web branch.
+Note: WebAssembly compilation should happen on the `web` branch. In order to prevent large git folders, delete the web branch and create a new `web` branch from `main` every time there is a release.
 
 Since we want the wasm binary to be as small as possible, there are several optimizations we need to do in order to make it around 20 MB. 
 1. Ensure you have the wasm32 rust toolchain installed
