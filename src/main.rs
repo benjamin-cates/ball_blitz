@@ -1,5 +1,6 @@
 mod balls;
 mod camera;
+mod input;
 mod points;
 mod scene_scale;
 mod setup;
@@ -18,9 +19,19 @@ fn main() {
         .add_systems(Startup, balls::load_ball_templates)
         .add_systems(Startup, points::spawn_points_ui)
         .add_systems(PostStartup, setup::setup)
+        .add_systems(Update, input::cursor_read)
+        .insert_resource(input::CursorTracking::new())
+        .add_event::<input::OrbitUpdate>()
+        .add_systems(
+            Update,
+            camera::orbit_camera.run_if(on_event::<input::OrbitUpdate>()),
+        )
+        .add_event::<input::BallSpawnUpdate>()
+        .add_systems(
+            Update,
+            balls::insertion_check.run_if(on_event::<input::BallSpawnUpdate>()),
+        )
         .add_systems(Update, balls::merge_check)
-        .add_systems(Update, balls::insertion_check)
-        .add_systems(Update, camera::orbit_camera)
         .add_systems(
             Update,
             scene_scale::box_scale.run_if(on_event::<BoxScaleEvent>()),
