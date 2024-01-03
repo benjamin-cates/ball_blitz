@@ -53,7 +53,7 @@ impl CursorTracking {
         // Cursor movement
         let cursor: Option<Vec2> = window.get_single().unwrap().cursor_position();
         let mut new_touches = BTreeMap::new();
-        if buttons.just_pressed(MouseButton::Left) {
+        if buttons.just_pressed(MouseButton::Left) && cursor.is_some() {
             new_touches.insert(
                 0,
                 TouchState {
@@ -64,7 +64,7 @@ impl CursorTracking {
                 },
             );
         } else {
-            let event_type = if cursor.is_none() || buttons.just_released(MouseButton::Left) {
+            let event_type = if buttons.just_released(MouseButton::Left) {
                 CursorChangeType::DragEnd
             } else if buttons.pressed(MouseButton::Left) {
                 CursorChangeType::Drag
