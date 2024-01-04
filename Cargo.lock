@@ -326,7 +326,6 @@ dependencies = [
  "bevy_wasm_window_resize",
  "bevy_xpbd_3d",
  "blake3",
- "lazy_static",
  "rand",
 ]
 
