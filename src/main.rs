@@ -4,9 +4,11 @@ mod input;
 mod points;
 mod scene_scale;
 mod setup;
+mod window_resize;
 
 use bevy::pbr::DirectionalLightShadowMap;
 use bevy::prelude::*;
+use bevy::window::WindowResolution;
 use bevy_wasm_window_resize::WindowResizePlugin;
 use bevy_xpbd_3d::prelude::*;
 use setup::BoxScaleEvent;
@@ -15,7 +17,7 @@ fn main() {
     App::new()
         .insert_resource(bevy::asset::AssetMetaCheck::Never)
         .add_plugins((DefaultPlugins, PhysicsPlugins::default()))
-        .add_plugins(WindowResizePlugin)
+        .add_plugins(window_resize::ResizePlugin)
         .add_systems(Startup, balls::load_ball_templates)
         .add_systems(Startup, points::spawn_points_ui)
         .add_systems(PostStartup, setup::setup)
